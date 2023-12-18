@@ -485,8 +485,8 @@ def to_epw(df: pd.DataFrame, out: io.StringIO, lat: float, lon: float):
         # index.year, index.month, index.day, index.hour+1, row['TMP'], int(row['w_dir']), row['w_spd'], row['APCP01']))
 
         out.write("{},{},{},{},60,-,{:.1f},{:.1f},999,999999,999,{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},999999,999999,9999,{:d},{:.1f},99,99,9999,99999,9,999999999,999,0.999,999,99,999,{:.1f},99\n".format(
-            index.year, index.month, index.day, index.hour+1, row['TMP'], row['DT'], row['RH'], row['PRES'], MJ_to_Wh(row['Ho']), MJ_to_Wh(row['IN0']), MJ_to_Wh(row['Ld']), MJ_to_Wh(row['TH']),MJ_to_Wh(row['DN']),
-            MJ_to_Wh(row['SH']), int(row['w_dir']), row['w_spd'], row['APCP01']))
+            index.year, index.month, index.day, index.hour+1, row['TMP'], row['DT'], row['RH'], row['PRES'], row['Ho'], row['IN0'], row['Ld'], row['TH'],row['DN'],
+            row['SH'], int(row['w_dir']), row['w_spd'], row['APCP01']))
 
 
 def main():
