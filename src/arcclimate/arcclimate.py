@@ -406,6 +406,15 @@ def to_has(df: pd.DataFrame, out: io.StringIO):
         out.write(("{:3d}"*24).format(*w_spd[:,d]))
         out.write("{}7\n".format(day_signature))
 
+def MJ_to_Wh(MJ):
+    """単位換算　MJ/m2・h => Wh/m2
+    Args:
+        MJ(float):日射量等(MJ/m2・h)
+
+    Returns:
+        W(float):日射量等(Wh/m2)
+    """
+    return MJ / (10**-6)
 
 def to_epw(df: pd.DataFrame, out: io.StringIO, lat: float, lon: float):
     """初期化処理
@@ -459,17 +468,25 @@ def to_epw(df: pd.DataFrame, out: io.StringIO, lat: float, lon: float):
         # N5: 分 = 0
         # N6: Dry Bulb Temperature
         # N7: Dew Point Temperature
-        # N8-N19: missing
-        # N11: Extraterrestrial Horizontal Radiation 大気圏外水平面日射量 Ho 未実装
-        # N12: Extraterrestrial Rirect Normal Radiation 大気圏外法線面日射量　IN0
-        # N13: Horizontal Infrared Radiation from Sky 大気放射量
+        # N8-N10: missing
+        # N11: Extraterrestrial Horizontal Radiation 大気圏外水平面日射量 Ho MJ/m2⇒Wh/m2
+        # N12: Extraterrestrial Rirect Normal Radiation 大気圏外法線面日射量　IN0 MJ/m2⇒Wh/m2
+        # N13: Horizontal Infrared Radiation from Sky 大気放射量 Ld MJ/m2⇒Wh/m2
+        # N14: Global Horizontal Radiation 全天日射量　TH MJ/m2⇒Wh/m2
+        # N15: Direct Normal Radiation 法線面直達日射量 DN MJ/m2⇒Wh/m2
+        # N16: Diffuse Horizontal Illuminance 水平面天空日射量 SH MJ/m2⇒Wh/m2
+        # N17-N19: missing
         # N20: w_dir
         # N21: w_spd
         # N22-N32: missing
         # N33: APCP01
         # N34: missing
-        out.write("{},{},{},{},60,-,{:.1f},{:.1f},999,999999,999,{:.1f},{:.1f},{:.1f},9999,{:.1f},{:.1f},{:.1f},999999,9999,{:d},{:.1f},99,99,9999,99999,9,999999999,999,0.999,999,99,999,{:.1f},99\n".format(
-            index.year, index.month, index.day, index.hour+1, row['TMP'], row['DT'], row['RH'], row['PRES'], row['IN0'], row['Ld'], row['TH'],int(row['w_dir']), row['w_spd'], row['APCP01']))
+        # {},{},{},{},60,-,{:.1f},99.9,999,999999,999,9999,9999,9999,9999,9999,999999,999999,999999,9999,{:d},{:.1f},99,99,9999,99999,9,999999999,999,0.999,999,99,999,{:.1f},99\n
+        # index.year, index.month, index.day, index.hour+1, row['TMP'], int(row['w_dir']), row['w_spd'], row['APCP01']))
+
+        out.write("{},{},{},{},60,-,{:.1f},{:.1f},999,999999,999,{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},{:.1f},999999,999999,9999,{:d},{:.1f},99,99,9999,99999,9,999999999,999,0.999,999,99,999,{:.1f},99\n".format(
+            index.year, index.month, index.day, index.hour+1, row['TMP'], row['DT'], row['RH'], row['PRES'], MJ_to_Wh(row['Ho']), MJ_to_Wh(row['IN0']), MJ_to_Wh(row['Ld']), MJ_to_Wh(row['TH']),MJ_to_Wh(row['DN']),
+            MJ_to_Wh(row['SH']), int(row['w_dir']), row['w_spd'], row['APCP01']))
 
 
 def main():
