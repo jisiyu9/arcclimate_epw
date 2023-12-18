@@ -245,6 +245,7 @@ def _convert_wind16(msm: pd.DataFrame):
       df(pd.DataFrame): MSMデータフレーム
     """
 
+
     # 風向風速の計算
     w_spd16, w_dir16 = get_wind16(msm['UGRD'], msm['VGRD'])
 
@@ -457,13 +458,18 @@ def to_epw(df: pd.DataFrame, out: io.StringIO, lat: float, lon: float):
         # N4: 時
         # N5: 分 = 0
         # N6: Dry Bulb Temperature
-        # N7-N19: missing
+        # N7: Dew Point Temperature
+        # N8-N19: missing
+        # N11: Extraterrestrial Horizontal Radiation 大気圏外水平面日射量 Ho 未実装
+        # N12: Extraterrestrial Rirect Normal Radiation 大気圏外法線面日射量　IN0
+        # N13: Horizontal Infrared Radiation from Sky 大気放射量
         # N20: w_dir
         # N21: w_spd
         # N22-N32: missing
         # N33: APCP01
         # N34: missing
-        out.write("{},{},{},{},60,-,{:.1f},99.9,999,999999,999,9999,9999,9999,9999,9999,999999,999999,999999,9999,{:d},{:.1f},99,99,9999,99999,9,999999999,999,0.999,999,99,999,{:.1f},99\n".format(index.year, index.month, index.day, index.hour+1, row['TMP'], int(row['w_dir']), row['w_spd'], row['APCP01']))
+        out.write("{},{},{},{},60,-,{:.1f},{:.1f},999,999999,999,{:.1f},{:.1f},{:.1f},9999,{:.1f},{:.1f},{:.1f},999999,9999,{:d},{:.1f},99,99,9999,99999,9,999999999,999,0.999,999,99,999,{:.1f},99\n".format(
+            index.year, index.month, index.day, index.hour+1, row['TMP'], row['DT'], row['RH'], row['PRES'], row['IN0'], row['Ld'], row['TH'],int(row['w_dir']), row['w_spd'], row['APCP01']))
 
 
 def main():
